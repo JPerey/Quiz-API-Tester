@@ -9,6 +9,7 @@ class QuizInterface():
 
     def __init__(self, quiz_brain: QuizBrain):
         self.quiz = quiz_brain
+        self.quiz_end = False
         self.score = 0
         self.answer = bool
         self.window = Tk()
@@ -35,18 +36,25 @@ class QuizInterface():
         self.window.mainloop()
 
     def get_next_question(self):
+        # self.change_white()
         question_text = self.quiz.next_question()
         self.canvas.itemconfig(self.canvas_text, text=question_text)
 
     def send_answer_true(self):
-        self.score, self.answer = self.quiz.check_answer("True")
-        self.score_label["text"] = f"Score= {self.score}"
-        self.give_feedback(self.answer)
+        if self.quiz_end:
+            pass
+        else:
+            self.score, self.answer = self.quiz.check_answer("True")
+            self.score_label["text"] = f"Score= {self.score}"
+            self.give_feedback(self.answer)
 
     def send_answer_false(self):
-        self.score, self.answer = self.quiz.check_answer("False")
-        self.score_label["text"] = f"Score= {self.score}"
-        self.give_feedback(self.answer)
+        if self.quiz_end:
+            pass
+        else:
+            self.score, self.answer = self.quiz.check_answer("False")
+            self.score_label["text"] = f"Score= {self.score}"
+            self.give_feedback(self.answer)
 
     def give_feedback(self, correct_answer):
         if correct_answer:
@@ -56,6 +64,9 @@ class QuizInterface():
             still_questions = self.quiz.still_has_questions()
             if still_questions:
                 self.window.after(1000, self.get_next_question)
+            else:
+                self.quiz_end = True
+                self.canvas.itemconfig(self.canvas_text, text="You have reached the end of the quiz!")
         else:
             print(f"answer: {self.answer}")
             self.canvas.configure(bg="red")
@@ -63,6 +74,9 @@ class QuizInterface():
             still_questions = self.quiz.still_has_questions()
             if still_questions:
                 self.window.after(1000, self.get_next_question)
+            else:
+                self.quiz_end = True
+                self.canvas.itemconfig(self.canvas_text, text="You have reached the end of the quiz!")
 
     def change_white(self):
         self.canvas.configure(bg="white")
